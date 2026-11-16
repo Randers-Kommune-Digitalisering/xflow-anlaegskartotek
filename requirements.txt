@@ -3,3 +3,5 @@ python-dotenv>=1.0.0
 gunicorn>=21.2.0
 prometheus_client>=0.25.0
 requests
+openpyxl
+rk-digi==2.2.0

@@ -24,7 +24,7 @@ def get_xflow_anlaeg_data() -> Response:
     if current_app.debug and os.getenv("XFLOW_ANLAEG_MOCK") == "1":
         payload = {
             "regnskabsaar": "2026",
-            "instutition/afdeling": "Testinstitution",
+            "institution/afdeling": "Testinstitution",
             "kontaktperson": "Testperson",
             "telefon": "12345678",
             "dato": "11-12-2026",
@@ -124,11 +124,11 @@ def get_xflow_anlaeg_data() -> Response:
             "forbedringer",
         ],
         "tekniske_anlaeg": [
-            "nyanskaffet_anlaeg100000",
+            "nyanskaffet_anlaeg_100000",
             "nyanskaffet_anlaeg",
         ],
         "inventar": [
-            "nyanskaffet_inventar100000",
+            "nyanskaffet_inventar_100000",
             "nyanskaffet_inventar",
         ],
         "leasingaftaler": [
