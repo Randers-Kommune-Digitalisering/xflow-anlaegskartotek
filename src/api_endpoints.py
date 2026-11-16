@@ -7,6 +7,13 @@ import os
 from flask import Blueprint, Response, current_app, request, send_file
 
 from io import BytesIO
+from pathlib import PurePath
+from urllib.parse import urlsplit
+from zipfile import ZIP_DEFLATED, ZipFile
+
+import requests
+
+from src.utils.xflow_anlaeg_excel import create_xflow_anlaeg_excel
 
 api = Blueprint("xflow_anlaeg", __name__, url_prefix="/api")
 logger = logging.getLogger(__name__)
@@ -32,7 +39,7 @@ def get_xflow_anlaeg_data() -> Response:
                 "afhaendet_fast_ejendom": "Nej",
                 "nyafhaendet_ejendom": [],
                 "foretaget_forbedringer": "Nej",
-                "forbedringer_e": []
+                "forbedringer": []
             },
             "tekniske_anlaeg": {
                 "anskaffet_anlaeg_100000": "Nej",
@@ -41,8 +48,7 @@ def get_xflow_anlaeg_data() -> Response:
                 "nyanskaffet_anlaeg": [
                     {
                         "nyanskaffet_a_beskrivelse": "Udskiftning af cirkulationspumpe i idrætshal",
-                        "nyanskaffet_bilagsnr": "1000000000",
-                        "nyanskaffet_a_type": "t",
+                        "nyanskaffet_a_bilagsnr": "1000000000",
                         "nyanskaffet_a_pris": "32500",
                         "nyanskaffet_a_aargang": "2026"
                     }
@@ -68,7 +74,8 @@ def get_xflow_anlaeg_data() -> Response:
                 "opsagt_leasingaftaler": "Nej",
                 "opsagte_leasingaftaler": [],
                 "andre_bemaerkninger": "Der er ikke indgået eller opsagt leasingaftaler i regnskabsåret. Der er derfor ingen leasingkontrakt at vedhæfte."
-            }
+            },
+            "process_id": "mock_process_id"
         }
 
         logger.info("Using XFlow asset mock payload")
@@ -120,7 +127,7 @@ def get_xflow_anlaeg_data() -> Response:
         "grunde_og_bygninger": [
             "nyanskaffet_ejendom",
             "nyafhaendet_ejendom",
-            "forbedringer_e",
+            "forbedringer",
         ],
         "tekniske_anlaeg": [
             "nyanskaffet_anlaeg100000",
@@ -180,12 +187,55 @@ def get_xflow_anlaeg_data() -> Response:
 
     logger.info("XFlow Excel report generated: filename=%s", filename)
 
+    token = os.getenv("XFLOW_PUBLIC_API_TOKEN")
+    headers = {"publicApiToken": token} if token else {}
+    allowed_host = os.environ["XFLOW_DOCUMENT_HOST"]
+
+    zip_buffer = BytesIO()
+
+    with ZipFile(zip_buffer, "w", compression=ZIP_DEFLATED) as archive:
+        archive.writestr("Anlaegsinberetning.xlsx", excel_bytes)
+
+        for index, contract in enumerate(contracts, start=1):
+            url = contract["url"]
+            parsed_url = urlsplit(url)
+
+            if(
+                parsed_url.scheme != "https"
+                or parsed_url.hostname != allowed_host
+                or parsed_url.username is not None
+                or parsed_url.password is not None
+            ):
+                return Response("Invalid document URL", status=400)
+
+            title = contract["title"]
+            filename = PurePath(title.replace("\\", "/")).name
+            if not filename or filename in {".", ".."}:
+                return Response("Invalid document filename", status=400)
+
+            try:
+                with requests.get(
+                    url,
+                    headers=headers,
+                    timeout=(5, 30),
+                    allow_redirects=False,
+                    stream=True,
+                ) as response:
+                    response.raise_for_status()
+                    if 300 <= response.status_code < 400:
+                        return Response("Document redirect not allowed", status=502)
+
+                    content = response.content
+            except requests.RequestException:
+                logger.exception("Could not retrieve XFlow document")
+                return Response("Could not retrieve attached document", status=502)
+
+            archive.writestr(f"kontrakter/{index}_{filename}", content)
+
+    zip_buffer.seek(0)
     return send_file(
-        BytesIO(excel_bytes),
-        mimetype=(
-            "application/vnd.openxmlformats-officedocument."
-            "spreadsheetml.sheet"
-        ),
+        zip_buffer,
+        mimetype="application/zip",
         as_attachment=True,
-        download_name=filename,
+        download_name="Anlaegsindberetning.zip"
     )
