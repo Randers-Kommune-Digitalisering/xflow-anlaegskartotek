@@ -3,39 +3,44 @@
 
 # Formål
 
-A Flask application.
+Automatisering for process af indberetninger til vedligeholdelse af anlægskartotek.
+Applikationen sender en e-mail med en Excel-rapport og eventuelle vedhæftede leasingkontrakter
+til den konfigurerede modtager.
 
 ## Beskrivelse
 
-*Kommer senere ..*
-
-<!--
-Detaljeret beskrivelse af den proces som løsningen varetager.
-Procesbeskrivelsen opdeles i sektioner hvis løsningen varetager forskellige processer eller flere subprocesser.
-Dette afsnit kan erstattes af `## Features`-afsnittet, hvis løsningen er et system frem for en automatiseret proces.
--->
+1. Applikationen modtager en indberetning fra XFlow.
+2. Indberetningen samles i en Exce-rapport.
+3. Eventuelle leasingkontrakter vedhæftes.
+4. Rapporten og filerne sendes via e-mail til den konfigurerede modtager
 
 ## Features
 
-*Kommer senere ..*
-
-<!--
-Beskrivelse af applikationens features. Dette afsnit bør kun inkluderes hvis løsningen er et system, eller varetager flere processer.
--->
+- Sender en Excel-rapport via e-mail.
+- Vedhæfter eventuelle leasingkontrakter.
+- Gør det muligt at konfigurere e-mailmodtageren via miljøvariablen `REPORT_EMAIL_RECIPIENT`.
 
 ## Afhængigheder
 
-<!--
-Henvisninger til applikationens afhængigheder, kategoriseret og med links til officielle websites.
--->
-
 :cloud: | API'er, FTP-servere, CDN'er andre online services som applikationen kommunikerer med.
 
-*TBD ..*
+- **XFlow** - leverer indberetningen.
+- **SMPT-server** - sender e-mailen med rapport og vedhæftede filer.
 
 :heavy_dollar_sign: | Miljøvariabler som forventes at være populeret.
 
-*TBD ..*
+| Variabel | Beskrivelse |
+|---|---|
+| `FLASK_ENV` | Konfiguration af miljøet: `dev` eller `prod`. Standard er `dev`. |
+| `PORT` | Port, som applikationen lytter på. Standard er `8080`. |
+| `DEBUG` | Slår debug-tilstand til eller fra. Standard afhænger af `FLASK_ENV`. |
+| `SMTP_SERVER` | Adresse på SMTP-serveren. |
+| `SMTP_PORT` | Port på SMTP-serveren. |
+| `SMTP_SENDER` | E-mailadresse, der sender rapporterne. |
+| `SMTP_PASSWORD` | Adgangskode til afsenderkontoen. |
+| `REPORT_EMAIL_RECIPIENT` | Modtager af rapporterne. | 
+
+Adgangskoder og andre hemmeligheder skal leveres sikkert. 
 
 ## Udvikling
 

@@ -15,7 +15,8 @@ HEADER_FILL = PatternFill(
 HEADER_FONT = Font(color="FFFFFF", bold=True)
 TITLE_FONT = Font(size=14, bold=True, color="1F4E78")
 
-def create_xflow_anlaeg_excel(payload:dict) -> bytes:
+
+def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     """
     Generate an Excel workbook from the XFlow report.
 
@@ -243,7 +244,7 @@ def write_section(
 ) -> int:
     """
     Write a section in the worksheet.
-    
+
     :worksheet ws: The worksheet to write to.
     :start_row: The starting row for the section.
     :title: The title of the section.
