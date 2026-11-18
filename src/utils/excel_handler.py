@@ -5,11 +5,12 @@ from io import BytesIO
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.worksheet import Worksheet
 
 HEADER_FILL = PatternFill(
     start_color="1F4E78",
     end_color="1F4E78",
-    fill_type="solid"
+    fill_type="solid",
 )
 
 HEADER_FONT = Font(color="FFFFFF", bold=True)
@@ -23,7 +24,6 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     :param payload: The data to be included in the Excel report.
     :return: The generated Excel file as bytes.
     """
-
     workbook = Workbook()
 
     # Overview
@@ -235,7 +235,7 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
 
 
 def write_section(
-        ws,
+        ws: Worksheet,
         start_row: int,
         title: str,
         answer: str,
@@ -245,14 +245,14 @@ def write_section(
     """
     Write a section in the worksheet.
 
-    :worksheet ws: The worksheet to write to.
-    :start_row: The starting row for the section.
-    :title: The title of the section.
-    :answer: The answer text for the section.
-    :records: A list of records to include in the section.
-    :columns: A list of column definitions for the records.
+    :param ws: The worksheet to write to.
+    :param start_row: The starting row for the section.
+    :param title: The title of the section.
+    :param answer: The answer text for the section.
+    :param records: A list of records to include in the section.
+    :param columns: A list of column definitions for the records.
+    :return: The row number after the section.
     """
-
     ws.cell(start_row, 1, title)
     ws.cell(start_row, 1).font = TITLE_FONT
 
@@ -268,16 +268,15 @@ def write_section(
     return start_row + max(8, len(records) + 4)
 
 
-def write_table(ws, start_row: int, records: list, columns: list) -> None:
+def write_table(ws: Worksheet, start_row: int, records: list, columns: list) -> None:
     """
     Write a table with headers and records.
 
-    :worksheet ws: The worksheet to write to.
-    :start_row: The starting row for the table.
-    :records: A list of records to include in the table.
-    :columns: A list of column definitions for the records.
+    :param ws: The worksheet to write to.
+    :param start_row: The starting row for the table.
+    :param records: A list of records to include in the table.
+    :param columns: A list of column definitions for the records.
     """
-
     headers = [label for label, _ in columns]
 
     for col, header in enumerate(headers, start=1):
@@ -299,12 +298,12 @@ def write_table(ws, start_row: int, records: list, columns: list) -> None:
             )
 
 
-def auto_adjust_columns(ws) -> None:
+def auto_adjust_columns(ws: Worksheet) -> None:
     """
-    Automatically adjust column widths
-    :worksheet ws: The worksheet to adjust columns for.
-    """
+    Automatically adjust column widths.
 
+    :param ws: The worksheet to adjust columns for.
+    """
     for column in ws.columns:
         max_length = 0
         column_letter = get_column_letter(column[0].column)

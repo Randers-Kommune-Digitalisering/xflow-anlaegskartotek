@@ -1,5 +1,5 @@
 """
-Receive XFlox asset and leasing reports
+Receive XFlox asset and leasing reports.
 """
 import logging
 import os
@@ -17,9 +17,8 @@ logger = logging.getLogger(__name__)
 @api.route("/xflow-anlaeg", methods=["GET"])
 def get_xflow_anlaeg_data() -> Response:
     """
-    Receive an asset report submitted through XFLow
+    Receive an asset report submitted through XFLow.
     """
-
     # Allow mock payload during local development
     if current_app.debug and os.getenv("XFLOW_ANLAEG_MOCK") == "1":
         payload = {
@@ -34,7 +33,7 @@ def get_xflow_anlaeg_data() -> Response:
                 "afhaendet_fast_ejendom": "Nej",
                 "nyafhaendet_ejendom": [],
                 "foretaget_forbedringer": "Nej",
-                "forbedringer": []
+                "forbedringer": [],
             },
             "tekniske_anlaeg": {
                 "anskaffet_anlaeg_100000": "Nej",
@@ -45,9 +44,9 @@ def get_xflow_anlaeg_data() -> Response:
                         "nyanskaffet_a_beskrivelse": "Udskiftning af cirkulationspumpe i idrætshal",
                         "nyanskaffet_a_bilagsnr": "1000000000",
                         "nyanskaffet_a_pris": "32500",
-                        "nyanskaffet_a_aargang": "2026"
-                    }
-                ]
+                        "nyanskaffet_a_aargang": "2026",
+                    },
+                ],
             },
             "inventar": {
                 "anskaffet_inventar_100000": "Nej",
@@ -58,9 +57,9 @@ def get_xflow_anlaeg_data() -> Response:
                         "nyanskaffet_i_beskrivelse": "nye omklædnngsskabe",
                         "nyanskaffet_i_bilagsnr": "2000000000",
                         "nyanskaffet_i_pris": "18500",
-                        "nyanskaffet_i_aargang": "2026"
-                    }
-                ]
+                        "nyanskaffet_i_aargang": "2026",
+                    },
+                ],
             },
             "leasingaftaler": {
                 "indgaaet_leasingaftaler": "Nej",
@@ -68,8 +67,8 @@ def get_xflow_anlaeg_data() -> Response:
                 "aftalekontrakter": [],
                 "opsagt_leasingaftaler": "Nej",
                 "opsagte_leasingaftaler": [],
-                "andre_bemaerkninger": "Der er ikke indgået eller opsagt leasingaftaler i regnskabsåret. Der er derfor ingen leasingkontrakt at vedhæfte."
-            }
+                "andre_bemaerkninger": "Der er ikke indgået eller opsagt leasingaftaler i regnskabsåret. Der er derfor ingen leasingkontrakt at vedhæfte.",
+            },
         }
 
         logger.info("Using XFlow asset mock payload")
@@ -79,8 +78,10 @@ def get_xflow_anlaeg_data() -> Response:
 
         if not isinstance(payload, dict):
             return Response(
-                "Invalid payload: expected a JSON object", status=400
+                "Invalid payload: expected a JSON object", status=400,
             )
+
+        logger.debug("XFlow payload: %s", payload)
 
     # Validate required top-level fields
     required_fields = [
@@ -99,7 +100,7 @@ def get_xflow_anlaeg_data() -> Response:
         if field not in payload:
             logger.error("Missing required field: %s", field)
             return Response(
-                f"Invalid payload: missing required field '{field}'", status=400
+                f"Invalid payload: missing required field '{field}'", status=400,
             )
 
     # Validate sections
@@ -113,7 +114,7 @@ def get_xflow_anlaeg_data() -> Response:
     for section in sections:
         if not isinstance(payload[section], dict):
             return Response(
-                f"Invalid payload: '{section}' must be a JSON object", status=400
+                f"Invalid payload: '{section}' must be a JSON object", status=400,
             )
 
     # Validate repeating fields
@@ -144,7 +145,7 @@ def get_xflow_anlaeg_data() -> Response:
 
             if not isinstance(value, list):
                 return Response(
-                    f"Invalid payload: '{section}.{field}' must me an array.", status=400
+                    f"Invalid payload: '{section}.{field}' must me an array.", status=400,
                 )
 
     # Extract information
@@ -157,12 +158,12 @@ def get_xflow_anlaeg_data() -> Response:
     logger.info(
         "XFlow asset report received: year=%s, institution=%s",
         regnskabsaar,
-        institution
+        institution,
     )
 
     logger.info(
         "Number of attached leasing contracts: %s",
-        len(contracts)
+        len(contracts),
     )
 
     try:
@@ -170,7 +171,7 @@ def get_xflow_anlaeg_data() -> Response:
     except (KeyError, TypeError, ValueError):
         logger.exception("Failed to generate XFlow Excel report")
         return Response(
-            "Excel report could not be generated", status=500
+            "Excel report could not be generated", status=500,
         )
 
     filename = (
@@ -189,5 +190,7 @@ def get_xflow_anlaeg_data() -> Response:
         for contract in contracts_downloaded
     )
 
-    send_report_email(email_attachments)
-    return Response("Report sent", status=200)
+    return Response("Report generated; email disabled", status=200)
+
+    # send_report_email(email_attachments)
+    # return Response("Report sent", status=200)
