@@ -9,15 +9,13 @@ from flask import Blueprint, Response, current_app, request
 from utils.document_handler import download_contracts
 from utils.email_handler import send_report_email
 from utils.excel_handler import create_xflow_anlaeg_excel
-
-from io import BytesIO
 from flask import Blueprint, Response, current_app, request, send_file
 
 api = Blueprint("xflow_anlaeg", __name__, url_prefix="/api")
 logger = logging.getLogger(__name__)
 
 
-@api.route("/xflow-anlaeg", methods=["GET"])
+@api.route("/xflow-anlaeg", methods=["POST"])
 def get_xflow_anlaeg_data() -> Response:
     """
     Receive an asset report submitted through XFLow.
