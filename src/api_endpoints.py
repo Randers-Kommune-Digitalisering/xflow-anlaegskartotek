@@ -75,6 +75,7 @@ def get_xflow_anlaeg_data() -> Response:
         logger.info("Using XFlow asset mock payload")
 
     else:
+        logger.info("Using XFlow asset payload from xflow")
         payload = request.get_json(silent=True)
 
         if not isinstance(payload, dict):
