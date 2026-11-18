@@ -85,7 +85,7 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     start_row = write_section(
         ws,
         start_row,
-        "Væsentlige forbedringer",
+        "Væsentlige forbedringer/renoveringer",
         data.get("foretaget_forbedringer"),
         data.get("forbedringer", []),
         [
@@ -100,35 +100,35 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
         workbook.remove(ws)
 
     # Tekniske anlæg
-    ws = workbook.create_sheet("Tekniske anlæg")
+    ws = workbook.create_sheet("Tekniske anlæg, maskiner, større specialudstyr og transportmidler")
     data = payload["tekniske_anlaeg"]
 
     start_row = 1
     start_row = write_section(
         ws,
         start_row,
-        "Anskaffede anlæg over 100.000 kr.",
-        data.get("anskaffet_anlaeg_100000"),
-        data.get("nyanskaffet_anlaeg_100000", []),
+        "Anskaffede anlæg, maskiner, større specialudstyr og transportmidler",
+        data.get("anskaffet_anlaeg"),
+        data.get("nyanskaffet_anlaeg", []),
         [
-            ("Beskrivelse", "nyanskaffet_a1_beskrivelse"),
-            ("Bilagsnr.", "nyanskaffet_a1_bilagsnr"),
-            ("Pris", "nyanskaffet_a1_pris"),
-            ("Årgang", "nyanskaffet_a1_aarang"),
+            ("Beskrivelse", "anskaffet_a_beskrivelse"),
+            ("Bilagsnr.", "anskaffet_a_bilagsnr"),
+            ("Pris", "anskaffet_a_pris"),
+            ("Årgang", "anskaffet_a_aarang"),
         ],
     )
 
     start_row = write_section(
         ws,
         start_row,
-        "Anskaffede anlæg under 100.000 kr.",
-        data.get("anskaffet_anlaeg"),
-        data.get("nyanskaffet_anlaeg", []),
+        "Afhaendede anlæg, maskiner, større specialudstyr og transportmidler",
+        data.get("afhaendet_anlaeg"),
+        data.get("nyafhaendet_anlaeg", []),
         [
-            ("Beskrivelse", "nyanskaffet_a_beskrivelse"),
-            ("Bilagsnr.", "nyanskaffet_a_bilagsnr"),
-            ("Pris", "nyanskaffet_a_pris"),
-            ("Årgang", "nyanskaffet_a_aargang"),
+            ("Beskrivelse", "afhaendet_a_beskrivelse"),
+            ("Bilagsnr.", "afhaendet_a_bilagsnr"),
+            ("Pris", "afhaendet_a_pris"),
+            ("Årgang", "afhaendet_a_aargang"),
         ],
     )
 
@@ -136,35 +136,35 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
         workbook.remove(ws)
 
     # Inventar
-    ws = workbook.create_sheet("Inventar")
+    ws = workbook.create_sheet("Inventar, herunder computere og andet IT-udstyr")
     data = payload["inventar"]
 
     start_row = 1
     start_row = write_section(
         ws,
         start_row,
-        "Anskaffet inventar over 100.000 kr.",
-        data.get("anskaffet_inventar_100000"),
-        data.get("nyanskaffet_inventar_100000", []),
+        "Anskaffet inventar, computere og andet IT-udstyr",
+        data.get("anskaffet_inventar"),
+        data.get("nyanskaffet_inventar", []),
         [
-            ("Beskrivelse", "nyanskaffet_i1_beskrivelse"),
-            ("Bilagsnr.", "nyanskaffet_i1_bilagsnr"),
-            ("Pris", "nyanskaffet_i1_pris"),
-            ("Årgang", "nyanskaffet_i1_aargang"),
+            ("Beskrivelse", "anskaffet_i_beskrivelse"),
+            ("Bilagsnr.", "anskaffet_i_bilagsnr"),
+            ("Pris", "anskaffet_i_pris"),
+            ("Årgang", "anskaffet_i_aargang"),
         ],
     )
 
     start_row = write_section(
         ws,
         start_row,
-        "Anskaffet inventar under 100.000 kr.",
-        data.get("anskaffet_inventar"),
-        data.get("nyanskaffet_inventar", []),
+        "Afhændet inventar, computere og andet IT-udstyr",
+        data.get("afhaendet_inventar"),
+        data.get("nyafhaendet_inventar", []),
         [
-            ("Beskrivelse", "nyanskaffet_i_beskrivelse"),
-            ("Bilagsnr.", "nyanskaffet_i_bilagsnr"),
-            ("Pris", "nyanskaffet_i_pris"),
-            ("Årgang", "nyanskaffet_i_aargang"),
+            ("Beskrivelse", "afhaendet_i_beskrivelse"),
+            ("Bilagsnr.", "afhaendet_i_bilagsnr"),
+            ("Pris", "afhaendet_i_pris"),
+            ("Årgang", "afhaendet_i_aargang"),
         ],
     )
     if start_row == 1:

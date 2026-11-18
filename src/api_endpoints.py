@@ -28,47 +28,108 @@ def get_xflow_anlaeg_data() -> Response:
             "kontaktperson": "Testperson",
             "telefon": "12345678",
             "dato": "11-12-2026",
+
             "grunde_og_bygninger": {
-                "anskaffet_fast_ejendom": "Nej",
-                "nyanskaffet_ejendom": [],
-                "afhaendet_fast_ejendom": "Nej",
-                "nyafhaendet_ejendom": [],
-                "foretaget_forbedringer": "Nej",
-                "forbedringer": [],
+                "anskaffet_fast_ejendom": "Ja",
+                "nyanskaffet_ejendom": [
+                    {
+                        "anskaffet_e_beskrivelse": "Erhvervelse af naboejendom til udvidelse af institutionen",
+                        "anskaffet_e_bilagsnr": "1000000001",
+                        "anskaffet_e_dato": "15-03-2026",
+                        "anskaffet_e_pris": "2500000",
+                    },
+                ],
+                "afhaendet_fast_ejendom": "Ja",
+                "nyafhaendet_ejendom": [
+                    {
+                        "afhaendet_e_beskrivelse": "Salg af tidligere administrationsbygning",
+                        "afhaendet_e_bilagsnr": "1000000002",
+                        "afhaendet_e_dato": "20-08-2026",
+                        "afhaendet_e_pris": "1800000",
+                    },
+                ],
+                "foretaget_forbedringer": "Ja",
+                "forbedringer": [
+                    {
+                        "forbedring_beskrivelse": "Gennemgribende renovering af institutionens tag og facade",
+                        "forbedring_bilagsnr": "1000000003",
+                        "forbedring_dato": "01-06-2026",
+                        "forbedring_pris": "450000",
+                    },
+                ],
             },
+
             "tekniske_anlaeg": {
-                "anskaffet_anlaeg_100000": "Nej",
-                "nyanskaffet_anlaeg_100000": [],
                 "anskaffet_anlaeg": "Ja",
                 "nyanskaffet_anlaeg": [
                     {
-                        "nyanskaffet_a_beskrivelse": "Udskiftning af cirkulationspumpe i idrætshal",
-                        "nyanskaffet_a_bilagsnr": "1000000000",
-                        "nyanskaffet_a_pris": "32500",
-                        "nyanskaffet_a_aargang": "2026",
+                        "anskaffet_a_beskrivelse": "Udskiftning af cirkulationspumpe i idrætshal",
+                        "anskaffet_a_bilagsnr": "2000000001",
+                        "anskaffet_a_pris": "32500",
+                        "anskaffet_a_aargang": "2026",
+                    },
+                    {
+                        "anskaffet_a_beskrivelse": "Ny ventilationsmaskine til skolebygning",
+                        "anskaffet_a_bilagsnr": "2000000002",
+                        "anskaffet_a_pris": "175000",
+                        "anskaffet_a_aargang": "2026",
                     },
                 ],
+                "afhaendet_anlaeg": "Ja",
+                "nyafhaendet_anlaeg": [
+                    {
+                        "afhaendet_a_beskrivelse": "Afhændelse af ældre traktor",
+                        "afhaendet_a_bilagsnr": "2000000003",
+                        "afhaendet_a_pris": "45000",
+                        "afhaendet_a_aargang": "2026",
+                    },
+                ]
             },
+
             "inventar": {
-                "anskaffet_inventar_100000": "Nej",
-                "nyanskaffet_inventar_100000": [],
                 "anskaffet_inventar": "Ja",
                 "nyanskaffet_inventar": [
                     {
-                        "nyanskaffet_i_beskrivelse": "nye omklædnngsskabe",
-                        "nyanskaffet_i_bilagsnr": "2000000000",
-                        "nyanskaffet_i_pris": "18500",
-                        "nyanskaffet_i_aargang": "2026",
+                        "anskaffet_i_beskrivelse": "Nye omklædningsskabe",
+                        "anskaffet_i_bilagsnr": "3000000001",
+                        "anskaffet_i_pris": "18500",
+                        "anskaffet_i_aargang": "2026",
+                    },
+                    {
+                        "anskaffet_i_beskrivelse": "Nye bærbare computere",
+                        "anskaffet_i_bilagsnr": "3000000002",
+                        "anskaffet_i_pris": "125000",
+                        "anskaffet_i_aargang": "2026",
+                    },
+                ],
+                "afhaendet_inventar": "Ja",
+                "nyafhaendet_inventar": [
+                    {
+                        "afhaendet_i_beskrivelse": "Afhændelse af ældre computere",
+                        "afhaendet_i_bilagsnr": "3000000003",
+                        "afhaendet_i_pris": "5000",
+                        "afhaendet_i_aargang": "2026",
                     },
                 ],
             },
+
             "leasingaftaler": {
-                "indgaaet_leasingaftaler": "Nej",
-                "indgaaede_leasingaftaler": [],
+                "indgaaet_leasingaftaler": "Ja",
+                "indgaaede_leasingaftaler": [
+                    {
+                        "indgaaet_beskrivelse": "Leasing af ny kopimaskine",
+                        "indgaaet_bemaerkninger": "Leasingaftalen løber over 48 måneder.",
+                    },
+                ],
                 "aftalekontrakter": [],
-                "opsagt_leasingaftaler": "Nej",
-                "opsagte_leasingaftaler": [],
-                "andre_bemaerkninger": "Der er ikke indgået eller opsagt leasingaftaler i regnskabsåret. Der er derfor ingen leasingkontrakt at vedhæfte.",
+                "opsagt_leasingaftaler": "Ja",
+                "opsagte_leasingaftaler": [
+                    {
+                        "opsagt_beskrivelse": "Opsigelse af leasingaftale på tidligere printere",
+                        "opsagt_bemaerkninger": "Aftalen ophørte pr. 30-09-2026.",
+                    },
+                ],
+                "andre_bemaerkninger": "Der er både indgået en ny leasingaftale og opsagt en eksisterende leasingaftale i regnskabsåret.",
             },
         }
 
@@ -128,12 +189,12 @@ def get_xflow_anlaeg_data() -> Response:
             "forbedringer",
         ],
         "tekniske_anlaeg": [
-            "nyanskaffet_anlaeg_100000",
             "nyanskaffet_anlaeg",
+            "nyafhaendet_anlaeg",
         ],
         "inventar": [
-            "nyanskaffet_inventar_100000",
             "nyanskaffet_inventar",
+            "nyafhaendet_inventar",
         ],
         "leasingaftaler": [
             "indgaaede_leasingaftaler",
