@@ -135,7 +135,7 @@ def get_xflow_anlaeg_data() -> Response:
         ],
         "leasingaftaler": [
             "indgaaede_leasingaftaler",
-            "aftalekontrakter",
+            # "aftalekontrakter",
             "opsagte_leasingaftaler",
         ],
     }
