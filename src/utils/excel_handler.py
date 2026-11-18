@@ -6,6 +6,8 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.worksheet import Worksheet
+from openpyxl.cell.rich_text import CellRichText, TextBlock
+from openpyxl.cell.text import InlineFont
 
 HEADER_FILL = PatternFill(
     start_color="1F4E78",
@@ -15,6 +17,7 @@ HEADER_FILL = PatternFill(
 
 HEADER_FONT = Font(color="FFFFFF", bold=True)
 TITLE_FONT = Font(size=14, bold=True, color="1F4E78")
+LABEL_FONT = Font(color="1F4E78", bold=True)
 
 
 def create_xflow_anlaeg_excel(payload: dict) -> bytes:
@@ -30,7 +33,7 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     ws = workbook.active
     ws.title = "Overblik"
 
-    ws["A1"] = "Anlægsindberetning"
+    ws["A1"] = "Registrering af fysiske aktiver til anlægskartotek"
     ws["A1"].font = TITLE_FONT
 
     overview = [
@@ -42,7 +45,8 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     ]
 
     for row, (label, value) in enumerate(overview, start=3):
-        ws.cell(row=row, column=1, value=label)
+        label_cell = ws.cell(row=row, column=1, value=label)
+        label_cell.font = LABEL_FONT
         ws.cell(row=row, column=2, value=value)
 
     # Grunde og bygninger
@@ -53,7 +57,7 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     start_row = write_section(
         ws,
         start_row,
-        "Nyanskaffede ejendomme",
+        "Anskaffede ejendomme",
         data.get("anskaffet_fast_ejendom"),
         data.get("nyanskaffet_ejendom", []),
         [
@@ -81,7 +85,7 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     start_row = write_section(
         ws,
         start_row,
-        "Foretagne forbedringer",
+        "Væsentlige forbedringer",
         data.get("foretaget_forbedringer"),
         data.get("forbedringer", []),
         [
@@ -92,6 +96,9 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
         ],
     )
 
+    if start_row == 1:
+        workbook.remove(ws)
+
     # Tekniske anlæg
     ws = workbook.create_sheet("Tekniske anlæg")
     data = payload["tekniske_anlaeg"]
@@ -100,7 +107,7 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     start_row = write_section(
         ws,
         start_row,
-        "Nyanskaffede anlæg over 100.000 kr.",
+        "Anskaffede anlæg over 100.000 kr.",
         data.get("anskaffet_anlaeg_100000"),
         data.get("nyanskaffet_anlaeg_100000", []),
         [
@@ -114,7 +121,7 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     start_row = write_section(
         ws,
         start_row,
-        "Nyanskaffede anlæg under 100.000 kr.",
+        "Anskaffede anlæg under 100.000 kr.",
         data.get("anskaffet_anlaeg"),
         data.get("nyanskaffet_anlaeg", []),
         [
@@ -125,6 +132,9 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
         ],
     )
 
+    if start_row == 1:
+        workbook.remove(ws)
+
     # Inventar
     ws = workbook.create_sheet("Inventar")
     data = payload["inventar"]
@@ -133,7 +143,7 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     start_row = write_section(
         ws,
         start_row,
-        "Nyanskaffet inventar over 100.000 kr.",
+        "Anskaffet inventar over 100.000 kr.",
         data.get("anskaffet_inventar_100000"),
         data.get("nyanskaffet_inventar_100000", []),
         [
@@ -147,7 +157,7 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
     start_row = write_section(
         ws,
         start_row,
-        "Nyanskaffet inventar under 100.000 kr.",
+        "Anskaffet inventar under 100.000 kr.",
         data.get("anskaffet_inventar"),
         data.get("nyanskaffet_inventar", []),
         [
@@ -157,6 +167,8 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
             ("Årgang", "nyanskaffet_i_aargang"),
         ],
     )
+    if start_row == 1:
+        workbook.remove(ws)
 
     # Leasingaftaler
     ws = workbook.create_sheet("Leasingaftaler")
@@ -187,43 +199,34 @@ def create_xflow_anlaeg_excel(payload: dict) -> bytes:
         ],
     )
 
-    # Attached contracts
-    ws.cell(start_row, 1, "Vedhæftede leasingkontrakter")
-    ws.cell(start_row, 1).font = TITLE_FONT
-
-    contracts = data.get("aftalekontrakter", [])
-
-    contract_columns = [
-        ("Filnavn", "title"),
-        ("Filtype", "mimeType"),
-        ("Filstørrelse (bytes)", "size"),
-        ("Checksum", "checksum"),
-        ("Fil URL", "url"),
-    ]
-
-    write_table(
-        ws,
-        start_row + 2,
-        contracts,
-        contract_columns,
-    )
-
     ws.cell(
-        start_row + len(contracts) + 4,
+        start_row,
         1,
         "Andre bemærkninger",
     )
 
     ws.cell(
-        start_row + len(contracts) + 5,
+        start_row,
+        1,
+    ).font = TITLE_FONT
+
+    ws.cell(
+        start_row + 1,
         1,
         data.get("andre_bemaerkninger", ""),
     )
 
+    if (
+        data.get("indgaaet_leasingaftaler") != "Ja"
+        and data.get("opsagt_leasingaftaler") != "Ja"
+        and not str(data.get("andre_bemaerkninger") or "").strip()
+    ):
+        workbook.remove(ws)
+
     # Format all worksheets
     for sheet in workbook.worksheets:
         sheet.freeze_panes = "A3"
-        sheet.sheet_view.showGridLines = False
+        sheet.sheet_view.showGridLines = True
         auto_adjust_columns(sheet)
 
     # Return Excel as bytes
@@ -253,19 +256,32 @@ def write_section(
     :param columns: A list of column definitions for the records.
     :return: The row number after the section.
     """
-    ws.cell(start_row, 1, title)
-    ws.cell(start_row, 1).font = TITLE_FONT
+    if answer != "Ja":
+        return start_row
 
-    ws.cell(start_row + 1, 1, "Svar")
-    ws.cell(start_row + 1, 2, answer or "")
+    title_cell = ws.cell(start_row, 1)
+
+    if " over " in title or " under " in title:
+        word = "over" if " over " in title else "under"
+        before, after = title.split(word, 1)
+        normal = InlineFont(sz=14, b=True, color="1F4E78")
+        underlined = InlineFont(sz=14, b=True, u="single", color="1F4E78")
+        title_cell.value = CellRichText(
+            TextBlock(normal, before),
+            TextBlock(underlined, word),
+            TextBlock(normal, after),
+        )
+    else:
+        title_cell.value = title
+        title_cell.font = TITLE_FONT
 
     write_table(
         ws,
-        start_row + 3,
+        start_row + 1,
         records,
         columns,
     )
-    return start_row + max(8, len(records) + 4)
+    return start_row + max(7, len(records) + 3)
 
 
 def write_table(ws: Worksheet, start_row: int, records: list, columns: list) -> None:

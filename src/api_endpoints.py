@@ -10,6 +10,9 @@ from utils.document_handler import download_contracts
 from utils.email_handler import send_report_email
 from utils.excel_handler import create_xflow_anlaeg_excel
 
+from io import BytesIO
+from flask import Blueprint, Response, current_app, request, send_file
+
 api = Blueprint("xflow_anlaeg", __name__, url_prefix="/api")
 logger = logging.getLogger(__name__)
 
@@ -190,7 +193,13 @@ def get_xflow_anlaeg_data() -> Response:
         for contract in contracts_downloaded
     )
 
-    return Response("Report generated; email disabled", status=200)
+    # til lokal
+    # return send_file(
+    #     BytesIO(excel_bytes),
+    #     as_attachment=True,
+    #     download_name=filename,
+    #     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    # )
 
-    # send_report_email(email_attachments)
-    # return Response("Report sent", status=200)
+    send_report_email(email_attachments)
+    return Response("Report sent", status=200)

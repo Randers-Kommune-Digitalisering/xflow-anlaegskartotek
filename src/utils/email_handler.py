@@ -15,7 +15,7 @@ def send_report_email(attachments: list[tuple[str, bytes]]) -> None:
         sender_email=os.environ["SMTP_SENDER"],
         sender_password=os.environ["SMTP_PASSWORD"],
     ).send_email(
-        recipients=os.environ["REPORT_EMAIL_RECIPIENT"],
+        recipients=["Sif.Rafn.van.Gilst@randers.dk"],
         subject="Anlægsindberetning",
         body="Anlægsindberetning er vedhæftet.",
         attachments=attachments,
