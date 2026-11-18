@@ -72,7 +72,8 @@ def get_xflow_anlaeg_data() -> Response:
             },
         }
 
-        logger.info("Using XFlow asset mock payload")
+        # Only for test purpose on the platform
+        logger.debug("Using XFlow asset mock payload")
 
     else:
         logger.info("Using XFlow asset payload from xflow")
