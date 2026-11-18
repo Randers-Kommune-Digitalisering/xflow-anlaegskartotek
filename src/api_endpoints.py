@@ -82,7 +82,7 @@ def get_xflow_anlaeg_data() -> Response:
                 "Invalid payload: expected a JSON object", status=400,
             )
 
-        logger.debug("XFlow payload: %s", payload)
+        logger.info("XFlow payload: %s", payload)
 
     # Validate required top-level fields
     required_fields = [
